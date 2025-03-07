@@ -9,16 +9,16 @@ from schemas import MovieDetailResponseSchema, MovieListResponseSchema
 router = APIRouter()
 
 
-@router.get("/movies/{film_id}", response_model=MovieDetailResponseSchema)
+@router.get("/movies/{movie_id}/", response_model=MovieDetailResponseSchema)
 async def get_film(movie_id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(MovieModel).where(MovieModel.id == movie_id))
     film = result.scalar_one_or_none()
     if not film:
-        raise HTTPException(status_code=404, detail="Film not found")
+        raise HTTPException(status_code=404, detail="Movies not found.")
     return film
 
 
-@router.get("/movies", response_model=MovieListResponseSchema)
+@router.get("/movies/", response_model=MovieListResponseSchema)
 async def get_movies(
     page: int = Query(1, alias="page", ge=1),
     per_page: int = Query(10, alias="per_page", ge=1),
@@ -50,4 +50,4 @@ async def get_movies(
             "prev_page": prev_page,
         }
 
-    raise HTTPException(status_code=404, detail="No movies")
+    raise HTTPException(status_code=404, detail="No movies found.")
